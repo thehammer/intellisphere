@@ -1,6 +1,5 @@
 mod loader;
 
-
 use std::collections::HashMap;
 
 use serde::Deserialize;
@@ -38,8 +37,7 @@ pub struct SphereConfig {
 
 // ── Authentication config ──────────────────────────────────────────
 
-#[derive(Debug, Clone, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Deserialize, Default)]
 pub struct AuthConfig {
     /// Whether authentication is enabled (default false for dev)
     #[serde(default)]
@@ -49,7 +47,6 @@ pub struct AuthConfig {
     #[serde(default)]
     pub strategies: Vec<AuthStrategyConfig>,
 }
-
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
@@ -184,8 +181,7 @@ impl Default for InputSanitizationConfig {
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Deserialize, Default)]
 pub struct OutboundConfig {
     /// PII leak detection in outbound responses
     #[serde(default)]
@@ -208,14 +204,11 @@ pub struct OutboundConfig {
     pub hallucination_flag: OutboundFilterToggle,
 }
 
-
-#[derive(Debug, Clone, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Deserialize, Default)]
 pub struct OutboundFilterToggle {
     #[serde(default)]
     pub enabled: bool,
 }
-
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct ResultSizeConfig {
