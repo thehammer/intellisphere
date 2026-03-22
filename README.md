@@ -4,19 +4,48 @@ A secure, configurable proxy and orchestration layer for Agentic AI. IntelliSphe
 
 ## Architecture
 
+```mermaid
+graph LR
+    Clients -->|HTTP| Sphere
+    Browser -->|WebSocket| Satellite
+
+    subgraph IntelliSphere
+        Sphere["Sphere<br/>(Rust)"] -->|gRPC| Core["Core<br/>(Go)"]
+        Satellite["Satellite<br/>(browser/edge)"] -->|WebSocket| Sphere
+    end
+
+    Core -->|API| LLMs["LLM APIs<br/>(Anthropic, OpenAI, ...)"]
 ```
-                    ┌─────────────────────────────────────────┐
-                    │              IntelliSphere               │
-  Clients ──HTTP──▶ │  ┌─────────┐    gRPC    ┌──────────┐   │
-                    │  │  Sphere  │ ────────── │   Core   │   │
-  Browser ──WS───▶ │  │  (Rust)  │            │   (Go)   │   │ ──▶ LLM APIs
-                    │  └─────────┘            └──────────┘   │     (Anthropic,
-                    │       ▲                                  │      OpenAI, ...)
-                    │       │ WebSocket                        │
-                    │  ┌─────────┐                             │
-                    │  │Satellite│ (browser/edge)              │
-                    │  └─────────┘                             │
-                    └─────────────────────────────────────────┘
+
+```mermaid
+block-beta
+    columns 7
+
+    space space block:is["IntelliSphere"]:5
+        columns 5
+        space:5
+        space
+        block:sp["Sphere (Rust)"]:2
+            Filters["Filters &<br/>Pipeline"]
+            Tools["Tool<br/>Orchestration"]
+        end
+        space
+        block:co["Core (Go)"]:1
+            Adapters["LLM<br/>Adapters"]
+        end
+        space:5
+        space
+        block:sa["Satellite (browser/edge)"]:2
+            Edge["Edge Tool<br/>Execution"]
+        end
+        space:2
+    end
+
+    Clients["Clients"] -- "HTTP" --> sp
+    Browser["Browser"] -- "WS" --> sa
+    sp -- "gRPC" --> co
+    sa -- "WebSocket" --> sp
+    co -- "API" --> LLMs["LLM APIs"]
 ```
 
 ### Components
