@@ -14,7 +14,7 @@ use tokio::sync::Mutex;
 use uuid::Uuid;
 
 use crate::errors::SphereError;
-use crate::satellite::adjudicator::{AdjudicationResult, Adjudicator, ToolProposal};
+use crate::satellite::adjudicator::{Adjudicator, ToolProposal};
 use crate::satellite::session::SessionManager;
 use crate::satellite::trust_budget::TrustBudget;
 use crate::AppState;

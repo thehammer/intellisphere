@@ -1,6 +1,5 @@
 mod loader;
 
-pub use loader::*;
 
 use std::collections::HashMap;
 
@@ -40,6 +39,7 @@ pub struct SphereConfig {
 // ── Authentication config ──────────────────────────────────────────
 
 #[derive(Debug, Clone, Deserialize)]
+#[derive(Default)]
 pub struct AuthConfig {
     /// Whether authentication is enabled (default false for dev)
     #[serde(default)]
@@ -50,14 +50,6 @@ pub struct AuthConfig {
     pub strategies: Vec<AuthStrategyConfig>,
 }
 
-impl Default for AuthConfig {
-    fn default() -> Self {
-        Self {
-            enabled: false,
-            strategies: vec![],
-        }
-    }
-}
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
@@ -193,6 +185,7 @@ impl Default for InputSanitizationConfig {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+#[derive(Default)]
 pub struct OutboundConfig {
     /// PII leak detection in outbound responses
     #[serde(default)]
@@ -215,29 +208,14 @@ pub struct OutboundConfig {
     pub hallucination_flag: OutboundFilterToggle,
 }
 
-impl Default for OutboundConfig {
-    fn default() -> Self {
-        Self {
-            pii_leak_detection: OutboundFilterToggle::default(),
-            injection_echo: OutboundFilterToggle::default(),
-            result_size: ResultSizeConfig::default(),
-            response_classifier: OutboundFilterToggle::default(),
-            hallucination_flag: OutboundFilterToggle::default(),
-        }
-    }
-}
 
 #[derive(Debug, Clone, Deserialize)]
+#[derive(Default)]
 pub struct OutboundFilterToggle {
     #[serde(default)]
     pub enabled: bool,
 }
 
-impl Default for OutboundFilterToggle {
-    fn default() -> Self {
-        Self { enabled: false }
-    }
-}
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct ResultSizeConfig {

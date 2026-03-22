@@ -12,6 +12,7 @@ impl SphereConfig {
     /// 1. Environment variables prefixed with SPHERE_
     /// 2. config/dyson.config.dev.yaml (if exists)
     /// 3. config/dyson.config.yaml
+    #[allow(clippy::result_large_err)]
     pub fn load() -> Result<Self, figment::Error> {
         Figment::new()
             .merge(Yaml::file("config/dyson.config.yaml"))

@@ -4,4 +4,3 @@ pub mod jwt;
 pub mod strategy;
 
 pub use identity::Identity;
-pub use strategy::{AuthError, AuthStrategy};
