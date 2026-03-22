@@ -17,37 +17,6 @@ graph LR
     Core -->|API| LLMs["LLM APIs<br/>(Anthropic, OpenAI, ...)"]
 ```
 
-```mermaid
-block-beta
-    columns 7
-
-    space space block:is["IntelliSphere"]:5
-        columns 5
-        space:5
-        space
-        block:sp["Sphere (Rust)"]:2
-            Filters["Filters &<br/>Pipeline"]
-            Tools["Tool<br/>Orchestration"]
-        end
-        space
-        block:co["Core (Go)"]:1
-            Adapters["LLM<br/>Adapters"]
-        end
-        space:5
-        space
-        block:sa["Satellite (browser/edge)"]:2
-            Edge["Edge Tool<br/>Execution"]
-        end
-        space:2
-    end
-
-    Clients["Clients"] -- "HTTP" --> sp
-    Browser["Browser"] -- "WS" --> sa
-    sp -- "gRPC" --> co
-    sa -- "WebSocket" --> sp
-    co -- "API" --> LLMs["LLM APIs"]
-```
-
 ### Components
 
 | Component | Language | Purpose |
