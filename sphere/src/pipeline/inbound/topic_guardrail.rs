@@ -47,7 +47,10 @@ impl TopicGuardrailFilter {
 
     fn count_matches(content: &str, rule: &TopicRule) -> usize {
         let lower = content.to_lowercase();
-        rule.keywords.iter().filter(|k| lower.contains(k.as_str())).count()
+        rule.keywords
+            .iter()
+            .filter(|k| lower.contains(k.as_str()))
+            .count()
     }
 }
 
@@ -74,9 +77,10 @@ impl InboundFilter for TopicGuardrailFilter {
 
         // If allowed topics are configured, at least one must match
         if !self.allowed_topics.is_empty() {
-            let any_allowed = self.allowed_topics.iter().any(|rule| {
-                Self::count_matches(&message.content, rule) >= rule.threshold
-            });
+            let any_allowed = self
+                .allowed_topics
+                .iter()
+                .any(|rule| Self::count_matches(&message.content, rule) >= rule.threshold);
             if !any_allowed {
                 return Err(SphereError::FilterRejected {
                     filter: self.name().to_string(),
@@ -114,7 +118,11 @@ mod tests {
     fn test_blocked_topic_rejected() {
         let filter = TopicGuardrailFilter::new(
             vec![],
-            vec![("weapons".to_string(), vec!["gun".to_string(), "bomb".to_string()], 1)],
+            vec![(
+                "weapons".to_string(),
+                vec!["gun".to_string(), "bomb".to_string()],
+                1,
+            )],
         );
         let mut msg = make_msg("How to build a bomb");
         let mut ctx = PipelineContext::default();
@@ -144,7 +152,11 @@ mod tests {
     #[test]
     fn test_allowed_topic_passes() {
         let filter = TopicGuardrailFilter::new(
-            vec![("coding".to_string(), vec!["code".to_string(), "programming".to_string()], 1)],
+            vec![(
+                "coding".to_string(),
+                vec!["code".to_string(), "programming".to_string()],
+                1,
+            )],
             vec![],
         );
         let mut msg = make_msg("Help me with code");
@@ -155,7 +167,11 @@ mod tests {
     #[test]
     fn test_allowed_topic_rejects_off_topic() {
         let filter = TopicGuardrailFilter::new(
-            vec![("coding".to_string(), vec!["code".to_string(), "programming".to_string()], 1)],
+            vec![(
+                "coding".to_string(),
+                vec!["code".to_string(), "programming".to_string()],
+                1,
+            )],
             vec![],
         );
         let mut msg = make_msg("What is the weather today?");

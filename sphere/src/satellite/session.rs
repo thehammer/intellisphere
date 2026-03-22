@@ -107,12 +107,7 @@ mod tests {
     fn create_and_get() {
         let mut mgr = SessionManager::new();
         let expires = Utc::now() + Duration::hours(1);
-        mgr.create(
-            "sess-1".into(),
-            "user-a".into(),
-            make_budget(),
-            expires,
-        );
+        mgr.create("sess-1".into(), "user-a".into(), make_budget(), expires);
         let s = mgr.get("sess-1").unwrap();
         assert_eq!(s.identity_sub, "user-a");
         assert_eq!(mgr.len(), 1);

@@ -29,8 +29,8 @@ Thumbs.db
 # Docker
 docker-compose.override.yaml
 
-# Generated protobuf (Go)
-core/proto/intellisphere/v1/*.go
+# Generated protobuf (Go) — committed for build reproducibility
+# core/proto/intellisphere/v1/*.go
 
 # Build artifacts
 *.o

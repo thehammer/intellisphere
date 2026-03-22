@@ -42,10 +42,7 @@ impl PIIRedactionFilter {
             },
             PiiPattern {
                 name: "PHONE",
-                regex: Regex::new(
-                    r"(\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}",
-                )
-                .unwrap(),
+                regex: Regex::new(r"(\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}").unwrap(),
                 mask_label: "[PHONE_REDACTED]",
                 replacement: "555-000-0000",
             },
@@ -57,10 +54,7 @@ impl PIIRedactionFilter {
             },
             PiiPattern {
                 name: "CREDIT_CARD",
-                regex: Regex::new(
-                    r"\b(?:\d[ -]*?){13,19}\b",
-                )
-                .unwrap(),
+                regex: Regex::new(r"\b(?:\d[ -]*?){13,19}\b").unwrap(),
                 mask_label: "[CREDIT_CARD_REDACTED]",
                 replacement: "0000-0000-0000-0000",
             },
@@ -90,12 +84,14 @@ impl InboundFilter for PIIRedactionFilter {
                 context.annotate("pii_detected", pattern.name.to_string());
 
                 content = match self.strategy {
-                    RedactionStrategy::Mask => {
-                        pattern.regex.replace_all(&content, pattern.mask_label).to_string()
-                    }
-                    RedactionStrategy::Replace => {
-                        pattern.regex.replace_all(&content, pattern.replacement).to_string()
-                    }
+                    RedactionStrategy::Mask => pattern
+                        .regex
+                        .replace_all(&content, pattern.mask_label)
+                        .to_string(),
+                    RedactionStrategy::Replace => pattern
+                        .regex
+                        .replace_all(&content, pattern.replacement)
+                        .to_string(),
                     RedactionStrategy::Remove => {
                         pattern.regex.replace_all(&content, "").to_string()
                     }

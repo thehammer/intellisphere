@@ -182,8 +182,7 @@ mod tests {
     #[test]
     fn test_pattern_name_echo_detected() {
         let filter = InjectionEchoFilter::new(InjectionEchoAction::Flag);
-        let mut msg =
-            make_msg("I acknowledge the ignore_previous instruction and will comply.");
+        let mut msg = make_msg("I acknowledge the ignore_previous instruction and will comply.");
         let mut ctx = ctx_with_injection_flags();
         filter.apply(&mut msg, &mut ctx).unwrap();
         let annotations = ctx.get_annotations("injection_echo_detected").unwrap();

@@ -25,11 +25,7 @@ pub struct JwtAuthStrategy {
 
 impl JwtAuthStrategy {
     /// Create a new HS256 JWT strategy with the given shared secret.
-    pub fn new_hs256(
-        secret: &str,
-        issuer: Option<&str>,
-        audience: Option<&str>,
-    ) -> Self {
+    pub fn new_hs256(secret: &str, issuer: Option<&str>, audience: Option<&str>) -> Self {
         let decoding_key = DecodingKey::from_secret(secret.as_bytes());
         let mut validation = Validation::new(Algorithm::HS256);
 
@@ -62,8 +58,8 @@ impl AuthStrategy for JwtAuthStrategy {
     }
 
     fn authenticate(&self, token: &str) -> Result<Identity, AuthError> {
-        let token_data = decode::<Claims>(token, &self.decoding_key, &self.validation)
-            .map_err(|e| {
+        let token_data =
+            decode::<Claims>(token, &self.decoding_key, &self.validation).map_err(|e| {
                 let msg = e.to_string();
                 if msg.contains("ExpiredSignature") {
                     AuthError::ExpiredToken

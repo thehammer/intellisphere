@@ -40,10 +40,7 @@ impl PIILeakDetectionFilter {
             },
             PiiPattern {
                 name: "PHONE",
-                regex: Regex::new(
-                    r"(\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}",
-                )
-                .unwrap(),
+                regex: Regex::new(r"(\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}").unwrap(),
                 mask_label: "[PHONE_REDACTED]",
             },
             PiiPattern {
@@ -103,12 +100,10 @@ impl OutboundFilter for PIILeakDetectionFilter {
                 message.content = content;
                 Ok(())
             }
-            PIILeakAction::Block => {
-                Err(SphereError::OutboundRejected(format!(
-                    "Response contains PII: {}",
-                    detected_str,
-                )))
-            }
+            PIILeakAction::Block => Err(SphereError::OutboundRejected(format!(
+                "Response contains PII: {}",
+                detected_str,
+            ))),
             PIILeakAction::Flag => {
                 for d in &detected {
                     context.annotate("outbound_pii_flagged", d.clone());

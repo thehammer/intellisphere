@@ -31,9 +31,7 @@ impl InputSanitizationFilter {
         if self.config.strip_control_chars {
             result = result
                 .chars()
-                .filter(|c| {
-                    !c.is_control() || *c == '\n' || *c == '\r' || *c == '\t'
-                })
+                .filter(|c| !c.is_control() || *c == '\n' || *c == '\r' || *c == '\t')
                 .collect();
         }
 

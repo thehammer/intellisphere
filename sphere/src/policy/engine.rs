@@ -35,11 +35,7 @@ impl PolicyEngine {
     /// Evaluate all applicable policies against the given context and event.
     ///
     /// Returns a list of violations (empty if everything passes).
-    pub fn evaluate(
-        &self,
-        context: &PipelineContext,
-        event: &PolicyEvent,
-    ) -> Vec<PolicyViolation> {
+    pub fn evaluate(&self, context: &PipelineContext, event: &PolicyEvent) -> Vec<PolicyViolation> {
         let mut violations = Vec::new();
 
         for policy in &self.policies {
@@ -62,11 +58,7 @@ impl PolicyEngine {
     }
 
     /// Check whether the policy scope matches the current event and context.
-    fn scope_matches(
-        scope: &PolicyScope,
-        _context: &PipelineContext,
-        event: &PolicyEvent,
-    ) -> bool {
+    fn scope_matches(scope: &PolicyScope, _context: &PipelineContext, event: &PolicyEvent) -> bool {
         match scope {
             PolicyScope::Global => true,
             PolicyScope::Session => true, // session policies always apply within a session

@@ -117,7 +117,7 @@ mod tests {
         assert!(budget.add_suspicion(SUSPICION_OVERSIZED)); // 0.5
         assert!(budget.add_suspicion(SUSPICION_RATE_LIMIT)); // 0.6
         assert!(budget.add_suspicion(SUSPICION_ADJUDICATION_FAILURE)); // 0.8
-        // 0.8 + 0.5 = 1.3 >= 1.0 => false
+                                                                       // 0.8 + 0.5 = 1.3 >= 1.0 => false
         assert!(!budget.add_suspicion(SUSPICION_INJECTION));
         assert!(budget.is_suspicious());
     }

@@ -18,8 +18,8 @@ impl ToolExecutor {
         let scoped_client = ScopedHttpClient::new(
             allowed_domains,
             Duration::from_secs(5),
-            1024 * 1024,  // 1MB request
-            1024 * 1024,  // 1MB response
+            1024 * 1024, // 1MB request
+            1024 * 1024, // 1MB response
         );
         Self { scoped_client }
     }

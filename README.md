@@ -268,7 +268,7 @@ cd core && go test ./...
 This project is licensed under the [Business Source License 1.1](LICENSE).
 
 - **Non-commercial use**: Free for personal projects, academic research, educational use, and evaluation
-- **Commercial use**: Requires a commercial license — contact licensing@intellisphere.dev
+- **Commercial use**: Requires a commercial license — [open an issue](https://github.com/thehammer/intellisphere/issues) to inquire
 - **Change date**: March 22, 2029 — automatically converts to Apache License 2.0
 
 ## Design Document

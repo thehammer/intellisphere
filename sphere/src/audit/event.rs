@@ -118,12 +118,7 @@ mod tests {
 
     #[test]
     fn audit_event_omits_identity_sub_when_none() {
-        let event = AuditEvent::new(
-            AuditEventType::FilterApplied,
-            "req-1",
-            "sess-1",
-            json!({}),
-        );
+        let event = AuditEvent::new(AuditEventType::FilterApplied, "req-1", "sess-1", json!({}));
 
         let json = serde_json::to_value(&event).unwrap();
         assert!(json.get("identity_sub").is_none());

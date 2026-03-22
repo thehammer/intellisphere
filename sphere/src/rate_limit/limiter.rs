@@ -58,14 +58,12 @@ impl RateLimiter {
 
         // Check per-identity limit
         let mut per_id = self.per_identity.lock().unwrap();
-        let bucket = per_id
-            .entry(identity_sub.to_string())
-            .or_insert_with(|| {
-                TokenBucket::new(
-                    self.per_identity_rule.requests_per_minute,
-                    self.per_identity_rule.burst,
-                )
-            });
+        let bucket = per_id.entry(identity_sub.to_string()).or_insert_with(|| {
+            TokenBucket::new(
+                self.per_identity_rule.requests_per_minute,
+                self.per_identity_rule.burst,
+            )
+        });
 
         let allowed = bucket.try_acquire(1);
         let remaining = bucket.remaining();

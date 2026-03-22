@@ -21,9 +21,8 @@ pub struct StdoutSink;
 
 impl AuditSink for StdoutSink {
     fn send(&self, event: &AuditEvent) {
-        let json = serde_json::to_string(event).unwrap_or_else(|e| {
-            format!("{{\"error\":\"failed to serialize audit event: {e}\"}}")
-        });
+        let json = serde_json::to_string(event)
+            .unwrap_or_else(|e| format!("{{\"error\":\"failed to serialize audit event: {e}\"}}"));
 
         tracing::info!(
             target: "audit",
@@ -52,10 +51,8 @@ impl FileSink {
     /// Create a new `FileSink` that writes daily-rotated files into `directory`
     /// with the given `file_name_prefix`.
     pub fn new(directory: impl AsRef<Path>, file_name_prefix: impl AsRef<str>) -> Self {
-        let file_appender = tracing_appender::rolling::daily(
-            directory.as_ref(),
-            file_name_prefix.as_ref(),
-        );
+        let file_appender =
+            tracing_appender::rolling::daily(directory.as_ref(), file_name_prefix.as_ref());
         let (writer, guard) = tracing_appender::non_blocking(file_appender);
         Self {
             _guard: guard,
@@ -68,9 +65,8 @@ impl AuditSink for FileSink {
     fn send(&self, event: &AuditEvent) {
         use std::io::Write;
 
-        let json = serde_json::to_string(event).unwrap_or_else(|e| {
-            format!("{{\"error\":\"failed to serialize audit event: {e}\"}}")
-        });
+        let json = serde_json::to_string(event)
+            .unwrap_or_else(|e| format!("{{\"error\":\"failed to serialize audit event: {e}\"}}"));
 
         // Write directly to the non-blocking writer; drop errors silently
         // since audit logging should never block or crash the pipeline.
@@ -145,12 +141,7 @@ mod tests {
     #[test]
     fn otlp_sink_does_not_panic() {
         let sink = OtlpSink;
-        let event = AuditEvent::new(
-            AuditEventType::ToolCallDenied,
-            "req-3",
-            "sess-3",
-            json!({}),
-        );
+        let event = AuditEvent::new(AuditEventType::ToolCallDenied, "req-3", "sess-3", json!({}));
         sink.send(&event);
     }
 }

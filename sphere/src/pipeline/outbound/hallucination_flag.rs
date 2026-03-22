@@ -18,10 +18,7 @@ pub struct HallucinationFlagFilter {
 impl HallucinationFlagFilter {
     pub fn new() -> Self {
         Self {
-            url_regex: Regex::new(
-                r"https?://[a-zA-Z0-9\-._~:/?#\[\]@!$&'()*+,;=%]+",
-            )
-            .unwrap(),
+            url_regex: Regex::new(r"https?://[a-zA-Z0-9\-._~:/?#\[\]@!$&'()*+,;=%]+").unwrap(),
         }
     }
 }
@@ -62,9 +59,9 @@ impl OutboundFilter for HallucinationFlagFilter {
 
         for url in &response_urls {
             // Check if this URL (or a prefix of it) appears in known URLs
-            let is_known = known_urls.iter().any(|known| {
-                url.starts_with(known.as_str()) || known.starts_with(url.as_str())
-            });
+            let is_known = known_urls
+                .iter()
+                .any(|known| url.starts_with(known.as_str()) || known.starts_with(url.as_str()));
 
             if !is_known {
                 hallucinated_urls.push(url.clone());
@@ -75,10 +72,7 @@ impl OutboundFilter for HallucinationFlagFilter {
             for url in &hallucinated_urls {
                 context.annotate("hallucination_flagged_url", url.clone());
             }
-            context.annotate(
-                "hallucination_confidence",
-                "low".to_string(),
-            );
+            context.annotate("hallucination_confidence", "low".to_string());
             tracing::info!(
                 count = hallucinated_urls.len(),
                 "Potential hallucinated URLs detected in response (flagged)"
@@ -136,8 +130,7 @@ mod tests {
     #[test]
     fn test_mixed_known_and_unknown() {
         let filter = HallucinationFlagFilter::new();
-        let mut msg =
-            make_msg("See https://real.com/page and https://fake.com/invented for info.");
+        let mut msg = make_msg("See https://real.com/page and https://fake.com/invented for info.");
         let mut ctx = PipelineContext::default();
         ctx.annotate("known_urls", "https://real.com/page");
         filter.apply(&mut msg, &mut ctx).unwrap();

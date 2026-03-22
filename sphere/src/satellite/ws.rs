@@ -108,8 +108,7 @@ pub fn generate_token(
     secret: &[u8],
 ) -> String {
     let data = format!("{}:{}:{}", session_id, identity_sub, expires_at);
-    let mut mac =
-        HmacSha256::new_from_slice(secret).expect("HMAC can take key of any size");
+    let mut mac = HmacSha256::new_from_slice(secret).expect("HMAC can take key of any size");
     mac.update(data.as_bytes());
     hex::encode(mac.finalize().into_bytes())
 }
@@ -137,12 +136,8 @@ pub async fn create_session(
 ) -> Result<impl IntoResponse, SphereError> {
     // Authenticate the caller
     let identity = state.ingress_gate.authenticate(
-        headers
-            .get("authorization")
-            .and_then(|v| v.to_str().ok()),
-        headers
-            .get("x-api-key")
-            .and_then(|v| v.to_str().ok()),
+        headers.get("authorization").and_then(|v| v.to_str().ok()),
+        headers.get("x-api-key").and_then(|v| v.to_str().ok()),
     )?;
 
     let session_id = Uuid::new_v4().to_string();
@@ -269,11 +264,7 @@ async fn handle_ws(mut socket: WebSocket, state: Arc<AppState>, session_id: Stri
 }
 
 /// Process an incoming WebSocket message.
-async fn handle_message(
-    state: &AppState,
-    session_id: &str,
-    text: &str,
-) -> SatelliteMessage {
+async fn handle_message(state: &AppState, session_id: &str, text: &str) -> SatelliteMessage {
     let msg: SatelliteMessage = match serde_json::from_str(text) {
         Ok(m) => m,
         Err(e) => {
@@ -314,12 +305,8 @@ async fn handle_message(
                 result_payload,
             };
 
-            let result = Adjudicator::adjudicate(
-                session,
-                &proposal,
-                &state.tool_registry,
-                &state.pipeline,
-            );
+            let result =
+                Adjudicator::adjudicate(session, &proposal, &state.tool_registry, &state.pipeline);
 
             // Check if session should be terminated
             if session.trust_budget.is_exhausted() || session.trust_budget.is_suspicious() {

@@ -175,7 +175,10 @@ fn validate_params(params_json: &str, schema_json: &str) -> Result<(), String> {
     let validator =
         jsonschema::validator_for(&schema).map_err(|e| format!("Invalid JSON Schema: {}", e))?;
 
-    let errors: Vec<String> = validator.iter_errors(&params).map(|e| e.to_string()).collect();
+    let errors: Vec<String> = validator
+        .iter_errors(&params)
+        .map(|e| e.to_string())
+        .collect();
 
     if errors.is_empty() {
         Ok(())

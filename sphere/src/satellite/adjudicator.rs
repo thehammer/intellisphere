@@ -117,10 +117,8 @@ impl Adjudicator {
             tool_calls: vec![],
             tool_results: vec![],
         };
-        let mut ctx = PipelineContext::new(
-            uuid::Uuid::new_v4().to_string(),
-            session.session_id.clone(),
-        );
+        let mut ctx =
+            PipelineContext::new(uuid::Uuid::new_v4().to_string(), session.session_id.clone());
 
         match pipeline.run_inbound(&mut message, &mut ctx) {
             Ok(()) => {}

@@ -28,7 +28,8 @@ pub struct ContentClassifierFilter {
 impl ContentClassifierFilter {
     pub fn new(mode: ClassifierMode, custom_patterns: Vec<String>) -> Self {
         let mut all_patterns = vec![
-            r"(?i)ignore\s+(all\s+|any\s+)?(previous|prior|above)\s+(instructions|prompts|rules)".to_string(),
+            r"(?i)ignore\s+(all\s+|any\s+)?(previous|prior|above)\s+(instructions|prompts|rules)"
+                .to_string(),
             r"(?i)you\s+are\s+now\s+(a\s+|in\s+)?".to_string(),
             r"(?i)disregard\s+(all\s+|any\s+)?(previous|prior|earlier)".to_string(),
             r"(?i)new\s+(instructions|rules|prompt|persona):".to_string(),
@@ -77,7 +78,11 @@ impl InboundFilter for ContentClassifierFilter {
         message: &mut Message,
         context: &mut PipelineContext,
     ) -> Result<(), SphereError> {
-        let matches: Vec<usize> = self.patterns.matches(&message.content).into_iter().collect();
+        let matches: Vec<usize> = self
+            .patterns
+            .matches(&message.content)
+            .into_iter()
+            .collect();
 
         if matches.is_empty() {
             return Ok(());
@@ -89,15 +94,10 @@ impl InboundFilter for ContentClassifierFilter {
             .collect();
 
         match self.mode {
-            ClassifierMode::Block => {
-                Err(SphereError::FilterRejected {
-                    filter: self.name().to_string(),
-                    reason: format!(
-                        "Potential injection detected: {}",
-                        matched_names.join(", ")
-                    ),
-                })
-            }
+            ClassifierMode::Block => Err(SphereError::FilterRejected {
+                filter: self.name().to_string(),
+                reason: format!("Potential injection detected: {}", matched_names.join(", ")),
+            }),
             ClassifierMode::Flag => {
                 // Annotate context for outbound InjectionEchoFilter
                 for name in &matched_names {

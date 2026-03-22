@@ -125,7 +125,8 @@ mod tests {
         let filter = TokenBudgetFilter::new(None, Some(10));
         let mut ctx = PipelineContext::default();
         // This message is ~50+ chars = ~13+ tokens, exceeds budget of 10
-        let mut msg = make_msg("This message is long enough to exceed the tiny session budget limit");
+        let mut msg =
+            make_msg("This message is long enough to exceed the tiny session budget limit");
         assert!(filter.apply(&mut msg, &mut ctx).is_err());
     }
 
