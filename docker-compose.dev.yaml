@@ -1,0 +1,13 @@
+# Development overrides: enables debug ports and mock LLM
+services:
+  core:
+    environment:
+      - LLM_PROVIDER=mock
+    ports:
+      - "50051:50051"
+
+  sphere:
+    environment:
+      - RUST_LOG=intellisphere_sphere=debug,tower_http=debug
+    ports:
+      - "8080:8080"

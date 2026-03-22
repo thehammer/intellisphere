@@ -1,0 +1,39 @@
+# Rust
+sphere/target/
+**/*.rs.bk
+
+# Go
+core/core
+cli/intellisphere
+
+# TypeScript / Node
+node_modules/
+dist/
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Docker
+docker-compose.override.yaml
+
+# Generated protobuf (Go)
+core/proto/intellisphere/v1/*.go
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib

@@ -1,0 +1,14 @@
+listen_addr: "0.0.0.0:8080"
+core_grpc_url: "http://core:50051"
+
+pipeline:
+  inbound:
+    input_sanitization:
+      enabled: true
+      strip_control_chars: true
+      normalize_unicode: true
+      reject_null_bytes: true
+  outbound: {}
+
+tools:
+  max_tool_iterations: 10

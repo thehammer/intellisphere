@@ -1,0 +1,173 @@
+syntax = "proto3";
+
+package intellisphere.v1;
+
+option go_package = "intellisphere/v1;intellispherev1";
+
+import "google/protobuf/timestamp.proto";
+
+// LLMCore is the service that proxies requests to LLM providers.
+// Sphere connects to Core over gRPC on the internal network.
+service LLMCore {
+  // Complete sends a completion request and returns a single response.
+  rpc Complete(CompletionRequest) returns (CompletionResponse);
+
+  // CompleteStream sends a completion request and returns a stream of chunks.
+  rpc CompleteStream(CompletionRequest) returns (stream CompletionChunk);
+
+  // Health checks the Core's readiness including LLM provider connectivity.
+  rpc Health(HealthRequest) returns (HealthResponse);
+}
+
+// --- Messages ---
+
+message CompletionRequest {
+  // The LLM provider to use (e.g., "anthropic", "openai").
+  string provider = 1;
+
+  // Model identifier (e.g., "claude-sonnet-4-20250514").
+  string model = 2;
+
+  // System prompt. Sphere injects tool definitions here.
+  string system = 3;
+
+  // Conversation messages.
+  repeated Message messages = 4;
+
+  // Maximum tokens to generate.
+  int32 max_tokens = 5;
+
+  // Temperature (0.0 to 1.0).
+  float temperature = 6;
+
+  // Tool definitions available to the model.
+  repeated ToolDefinition tools = 7;
+
+  // Optional stop sequences.
+  repeated string stop_sequences = 8;
+
+  // Request metadata for tracing.
+  RequestMetadata metadata = 9;
+}
+
+message Message {
+  // Role: "user", "assistant", or "tool_result".
+  string role = 1;
+
+  // Text content of the message.
+  string content = 2;
+
+  // Tool call results (when role = "tool_result").
+  repeated ToolResult tool_results = 3;
+
+  // Tool calls made by the assistant (populated in responses).
+  repeated ToolCall tool_calls = 4;
+}
+
+message ToolDefinition {
+  // Unique tool name.
+  string name = 1;
+
+  // Human-readable description for the LLM.
+  string description = 2;
+
+  // JSON Schema defining the tool's input parameters.
+  string input_schema_json = 3;
+}
+
+message ToolCall {
+  // Unique identifier for this tool call.
+  string call_id = 1;
+
+  // Name of the tool to invoke.
+  string name = 2;
+
+  // JSON-encoded arguments.
+  string arguments_json = 3;
+}
+
+message ToolResult {
+  // The call_id this result corresponds to.
+  string call_id = 1;
+
+  // JSON-encoded result.
+  string result_json = 2;
+
+  // Whether this result represents an error.
+  bool is_error = 3;
+}
+
+message CompletionResponse {
+  // The assistant's response content.
+  string content = 1;
+
+  // Tool calls requested by the model.
+  repeated ToolCall tool_calls = 2;
+
+  // Why the model stopped generating.
+  StopReason stop_reason = 3;
+
+  // Token usage for this completion.
+  Usage usage = 4;
+
+  // Model that actually served the request.
+  string model = 5;
+}
+
+message CompletionChunk {
+  // Incremental text content.
+  string delta = 1;
+
+  // Tool call being streamed (partial).
+  ToolCall tool_call = 2;
+
+  // Set on the final chunk.
+  StopReason stop_reason = 3;
+
+  // Set on the final chunk.
+  Usage usage = 4;
+
+  // Chunk type for client routing.
+  ChunkType chunk_type = 5;
+}
+
+enum ChunkType {
+  CHUNK_TYPE_UNSPECIFIED = 0;
+  CHUNK_TYPE_TEXT_DELTA = 1;
+  CHUNK_TYPE_TOOL_CALL_START = 2;
+  CHUNK_TYPE_TOOL_CALL_DELTA = 3;
+  CHUNK_TYPE_TOOL_CALL_END = 4;
+  CHUNK_TYPE_MESSAGE_END = 5;
+}
+
+enum StopReason {
+  STOP_REASON_UNSPECIFIED = 0;
+  STOP_REASON_END_TURN = 1;
+  STOP_REASON_TOOL_USE = 2;
+  STOP_REASON_MAX_TOKENS = 3;
+  STOP_REASON_STOP_SEQUENCE = 4;
+}
+
+message Usage {
+  int32 input_tokens = 1;
+  int32 output_tokens = 2;
+}
+
+message RequestMetadata {
+  // Unique request ID for tracing.
+  string request_id = 1;
+
+  // Session ID for multi-turn conversations.
+  string session_id = 2;
+
+  // Timestamp of the request.
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+  bool healthy = 1;
+  string provider = 2;
+  string message = 3;
+}

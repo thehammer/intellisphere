@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  proto-check:
+    name: Proto Compilation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "27.x"
+      - name: Validate proto syntax
+        run: protoc --proto_path=proto proto/intellisphere/v1/intellisphere.proto --descriptor_set_out=/dev/null
+
+  rust:
+    name: Sphere (Rust)
+    runs-on: ubuntu-latest
+    needs: proto-check
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "27.x"
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: sphere
+      - name: Check formatting
+        working-directory: sphere
+        run: cargo fmt --check
+      - name: Clippy
+        working-directory: sphere
+        run: cargo clippy -- -D warnings
+      - name: Build
+        working-directory: sphere
+        run: cargo build
+      - name: Test
+        working-directory: sphere
+        run: cargo test
+
+  go:
+    name: Core (Go)
+    runs-on: ubuntu-latest
+    needs: proto-check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+          cache-dependency-path: core/go.sum
+      - name: Install protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "27.x"
+      - name: Install Go proto plugins
+        run: |
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+      - name: Generate proto
+        run: |
+          protoc --proto_path=proto \
+            --go_out=core --go_opt=paths=source_relative \
+            --go-grpc_out=core --go-grpc_opt=paths=source_relative \
+            proto/intellisphere/v1/intellisphere.proto
+      - name: Build
+        working-directory: core
+        run: go build ./...
+      - name: Test
+        working-directory: core
+        run: go test ./...
+      - name: Vet
+        working-directory: core
+        run: go vet ./...

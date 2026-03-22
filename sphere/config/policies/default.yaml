@@ -1,0 +1,3 @@
+# Default policy configuration
+# Phase 2 will implement the full policy engine.
+policies: []

@@ -1,0 +1,33 @@
+services:
+  sphere:
+    build:
+      context: ./sphere
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPHERE__CORE_GRPC_URL=http://core:50051
+      - RUST_LOG=intellisphere_sphere=info,tower_http=info
+    depends_on:
+      core:
+        condition: service_started
+    networks:
+      - intellisphere-internal
+
+  core:
+    build:
+      context: ./core
+      dockerfile: Dockerfile
+    ports:
+      - "50051:50051"
+    environment:
+      - CORE_PORT=50051
+      - LLM_PROVIDER=anthropic
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - DEFAULT_MODEL=${DEFAULT_MODEL:-claude-sonnet-4-20250514}
+    networks:
+      - intellisphere-internal
+
+networks:
+  intellisphere-internal:
+    driver: bridge
